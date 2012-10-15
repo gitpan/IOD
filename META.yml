@@ -1,0 +1,19 @@
+---
+abstract: 'IOD file format specification'
+author:
+  - 'Steven Haryanto <stevenharyanto@gmail.com>'
+build_requires:
+  Module::Build: 0.3601
+configure_requires:
+  Module::Build: 0.3601
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.300002, CPAN::Meta::Converter version 2.112150'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: IOD
+resources:
+  homepage: http://metacpan.org/release/IOD
+  repository: http://github.com/sharyanto/perl-IOD
+version: 0.9.0

@@ -1,0 +1,22 @@
+Revision history for IOD
+
+0.9.0    2012-10-14 (SHARYANTO)
+
+         First release. Split from implementation Config-Ini-OnDrugs.
+
+         - Some rewording and reorganization.
+
+         - Change nested section syntax, from using indented section line to
+           using [foo/bar], in an effort to prevent users getting confused with
+           significant indentation.
+
+         - Expression now uses Text::Xslate::Syntax::Kolon instead of
+           Language::Expr (probably temporary? due to slow implementation of
+           Language::Expr).
+
+         - Add directives: !sectionpath, !no{merge,defaults,sectionpath}
+
+         - Now only one argument is allowed for !defaults.
+
+         - Some rewording and reorganization.
+
