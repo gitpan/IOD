@@ -1,13 +1,12 @@
-package IOD; # just to make PodWeaver happy
 
-our $VERSION = '0.9.0'; # VERSION
-
-1;
 #ABSTRACT: IOD file format specification
-
+#PODNAME: IOD
 
 __END__
+
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -15,7 +14,7 @@ IOD - IOD file format specification
 
 =head1 VERSION
 
-version 0.9.0
+This document describes version 0.9.1 of IOD (from Perl distribution IOD), released on 2014-08-13.
 
 =head1 SPECIFICATION VERSION
 
@@ -28,8 +27,8 @@ between 0.9.x releases.
 
 =head1 ABSTRACT
 
-IOD (short for INI On Drugs) is a configuration file format that is
-backwards-compatible with the popular INI format. It adds a few extensions to
+IOD (short for INI On Drugs) is a configuration file format that is mostly
+backward-compatible with the popular INI format. It adds a few extensions to
 make configuration more powerful but still lets the configuration parseable by a
 regular INI parser (albeit the parse result might differ, sometimes
 significantly so, but it can be exactly the same for simple cases). An
@@ -40,8 +39,9 @@ IOD is meant to be a general configuration format for applications.
 
 =head1 NOTATION
 
-Data structure is written in pseudo JSON format (JSON with ellipsis C<...> to
-denote missing pieces or say "so on", and comments.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in RFC 2119.
 
 =head1 RATIONALE
 
@@ -49,43 +49,46 @@ A general configuration file format needs to be simple for computers as well as
 users to read and write. Users mostly need to write configuration, while
 computers need to read but increasingly nowadays also write to configuration
 (for automation tasks). INI is chosen as the basis format for several reasons:
-popularity, simplicity, and ease of round trip parsing. These features satisfy
-the aforementioned requirement.
+popularity, simplicity, and ease of round-trip parsing. These features satisfy
+the aforementioned requirements.
 
-INI format is popular on Windows as well as Unix. This makes it easy for new
-users to get started with the configuration.
+Popularity: INI format is popular on Windows as well as Unix. This makes it easy
+for new users to get started with the configuration.
 
-INI format is simple and very straightforward. It is essentially assignments of
-parameter names and values, with sections.
+Simplicity: INI format is simple and very straightforward. It is essentially
+assignments of key names and values, with sections.
 
-Round trip parsing means preserving everything in the file, including comments
-and formatting (indentations, whitespaces). Most serialization format do not
-have round trip parsers: after a read and write process, original formatting and
-comments are lost. Round trip parsing means that if one loads an INI file,
-modifies a parameter, and saves it again, everything that is not modified will
-still be the same (including whitespaces and comments). If no parameters are
-modified, the saved file will be identical with the original.
+Round-trip parsing: Round-trip parsing means preserving everything in the file
+through the parsing process, including comments and formatting (indentations,
+whitespaces). Most serialization format do not have round-trip parsers: after a
+read and write process, original formatting and comments are lost. Round-trip
+parsing means that if one loads an INI file, modifies a key value, and saves it
+again, everything that is not modified will still be the same (including
+whitespaces and comments). If no keys are modified, the saved file will be
+identical with the original.
 
-Round trip parsing is desirable in a configuration because oftentimes valuable
-information is contained in the formatting/indentation (grouping of parameters)
-as well as comments (user explaining why she sets a parameter to a certain
-value, dates, other notes). Software modifying a configuration should not
-destroy all these.
+Round-trip parsing is desirable in a configuration because oftentimes valuable
+information is contained in the formatting/indentation (grouping of keys) as
+well as comments (user explaining why she sets a key to a certain value, dates,
+other notes). Software modifying a configuration should not destroy all these.
 
 =head2 INI vs ...
 
-Although B<YAML> looks nice and has many features, it lacks round trip parsers
-and has complex rules that can trip beginners or non-programmers, e.g.
-significant indentation, significant whitespace after colon in mapping, etc.
+B<YAML>. Although YAML looks nice and has many features, it lacks round-trip
+parsers and has complex rules that can trip beginners or non-programmers, e.g.
+significant indentation, significant whitespace in some places (for example
+after colon in mapping), etc.
 
-Although B<JSON> is popular, it lacks round trip parsers and some important
-features (e.g. comments). (Note: The documentation for L<JSON> Perl module
-mentions the phrase "round trip", but it uses the phrase to mean integrity of
-values, not preserving comments/whitespaces.)
+B<JSON>. Although JSON is popular and simple, it lacks round-trip parsers and
+some important features (e.g. comments). (Note: The documentation for L<JSON>
+Perl module mentions the phrase "round-trip", but it uses the phrase to mean
+integrity of values, not preserving comments/whitespaces.)
 
-B<Apache-webserver-style> lacks round trip parsers.
+But note that IOD uses JSON in places.
 
-B<XML> lacks round trip parsers and is not convenient for humans to read and
+B<Apache-webserver-style> lacks round-trip parsers.
+
+B<XML> lacks round-trip parsers and is not convenient for humans to read and
 write.
 
 =head2 Why not plain INI?
@@ -94,34 +97,15 @@ First, INI format is ill-defined. There is no single standard, thus various
 implementations behave differently and there are various variants of the format.
 This specification intends to describe the IOD format more precisely.
 
-Second, INI lacks some features that I like/need, like: nested section, variable
+Second, INI lacks some features that I like/need, like: variable
 substitution/expression, inclusion of other files, and merging between sections.
 Most of these features make writing configuration less repetitive.
 
 =head1 SPECIFICATION
 
-A configuration is a text file containing a sequence of lines. Default encoding
-is UTF-8. Each line is either a blank line, a comment line, a directive line, a
-section line, or a parameter line. Parsing is done line-by-line and in a single
-pass.
-
-=head2 Argument and quoting
-
-An argument is a sequence of one or more non-whitespace, non-newline, and
-non-double-quote (C<">) characters. Examples:
-
- word
- argument2
- yet-another-argument!
-
-To represent a zero-length argument or argument containing quotes, newlines, or
-other non-printable characters, a quoting mechanism can be used. Quoting is done
-with the double-quote (C<">) character. Escaping is done using the backslash
-(C<\>) character. Known escapes are C<\'> (literal single-quote), C<\"> (literal
-double-quote), C<\\> (literal backslash), C<\r> (linefeed), C<\f> (formfeed),
-C<\$> (literal dollar), C<\n> (newline), C<\t> (tab), C<\b> (backspace), C<\a>
-(bell), C<\0> (null character), octal form (e.g. C<\0377>), hex form (e.g.,
-C<\xff>) and wide-hex form (C<\x{263a}>).
+A configuration is a text file containing a sequence of lines. Encoding MUST be
+UTF-8. Each line is either a blank line, a comment line, a key line, a section
+line, or a directive line. Parsing is done line-by-line and in a single pass.
 
 =head2 Blank line
 
@@ -130,15 +114,114 @@ A blank line is a line containing zero or more whitespaces only. It is ignored.
 =head2 Comment line
 
 A comment line begins with C<;> or C<#> as it's first nonblank character (note
-that some INI parsers do not allow indented comment). The use of C<;> is
-preferred.
+that some INI parsers do not allow indented comment; some only recognizes C<;>
+as the comment starter character). The use of C<;> is preferred. Examples:
+
+ ; this is a comment
+ # this is also a comment
+
+=head2 Key line
+
+This line sets key name and value:
+
+ C<NAME> <ws>* "=" <ws>* <VALUE> [";"|"#" [COMMENT]]
+
+C<NAME> is one or more non-whitespace characters and must not contain the equal
+sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
+optional encoding prefix, or a JSON string with double quotes. Encoding prefix
+is C<!> followed by encoding name, followed by at least one space. Known
+encodings are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
+
+Comment is allowed unless when it creates ambiguity in parsing (e.g. unquoted
+value with C<!j> or C<!json> encoding).
+
+Examples:
+
+ foo=bar
+ foo bar=baz
+ foo = bar baz ; whitespace around the equal sign will be removed
+ foo=!base64 YmFyIGJheg==
+ foo=!hex 00ff00 ; 3-byte binary data
+ foo="a JSON string\nwith newline" ; comment
+ foo=!j "a JSON string\nwith newline"
+ foo=!json [1,2,3]
+
+Specifying several keys with the same name will create an array value. Example:
+
+ a=1
+ a=2
+
+will result in (in JSON):
+
+ {"a": [1,2]}
+
+To specify expression, use the C<!e> or C<!expr> encoding. Example:
+
+ x=3
+ y=5
+ z=!e $x+$y ; 8
+
+See L</"Expression"> for more details on expressions.
+
+Normally a key line should occur below section line, so that key belongs to the
+section. But a key line is also allowed before section line, in which it will
+belong to section called C<ALL> (configurable via the parser's
+B<fallback_section> attribute).
+
+=head2 Section line
+
+A section line introduces a section:
+
+ "[" <NAME> "]" <ws>* [";"|"#" [COMMENT]]
+
+C<NAME> is one or more non-newline characters that are not C<]>.
+
+Examples:
+
+ [foo]
+ [Section Name]
+ [foo.bar.baz]  ; a comment
+
+Non-contiguous sections are allowed, they will be assumed to be set/add keys as
+if the section were written contiguously, e.g.:
+
+ [sect1]
+ a=1
+
+ [sect2]
+ a=1
+
+ [sect1]
+ a=2
+ b=3
+
+will result in C<sect1> containing C<a> as C<[1, 2]> and C<b> as C<3>. However,
+note:
+
+ [sect1]
+ a=1
+
+ ;!merge sect1
+ [sect2]
+ d=4
+
+ [sect1]
+ b=2
+
+ [sect3]
+ c=3
+
+C<sect2> will contain C<< {"a":1, "d":4} >> since at the point of parsing
+C<sect2>, C<sect1> only contains C<< {"a":1} >>. However, C<sect3> will contain
+C<< {"a":1, "b":2, "c":3} >> since at the point of parsing C<sect3>, C<sect1>
+already becomes C<< {"a":1, "b":2} >>.
 
 =head2 Directive line
 
-A directive line is a special unindented comment line, the comment starts with
-zero or more whitespaces, an exclamation mark (C<!>), a directive name (a word
-matching regular expression C</\w+/>, and zero or more arguments separated by
-whitespaces. An invalid directive will cause parsing to fail.
+A directive line is a special unindented comment line using the C<;> comment
+character, the comment starts with an exclamation mark (C<!>), a directive name
+(a word matching regular expression C</\w+/>, and zero or more arguments
+separated by whitespaces. An invalid directive will cause parsing to fail.
 
 Examples of valid directives:
 
@@ -147,7 +230,7 @@ Examples of valid directives:
 
 This directive is invalid because of invalid name:
 
- ;!what-a-directive!
+ ;!include! somefile.iod
 
 This directive is invalid because it is unknown:
 
@@ -160,6 +243,16 @@ This directive is invalid because of unbalanced quotes:
 This directive is invalid because of missing required argument:
 
  ;!include
+
+B<Argument>. An argument is a sequence of one or more non-whitespace,
+non-newline characters, or a JSON string. Examples:
+
+ word
+ argument2
+ yet-another-argument!
+ "argument as JSON string"
+ ""
+ "line1\nline2"
 
 Below is the list of known directives (C<< <foo> >> signifies required
 arguments, C<[foo]> signifies optional arguments):
@@ -174,7 +267,7 @@ with an error. Example:
 
 File C<dir1/a.ini>:
 
- [sectionA/sub1]
+ [sectionA.sub1]
  a=1
  ;!include ../dir2/b.ini
  ;!include ../dir2/b3.ini
@@ -210,292 +303,49 @@ When C<dir1/a.ini> is parsed, the result will be (in JSON):
    },
  }
 
-=head3 !defaults <SECTION>
+=head3 !merge <SECTION> ...
 
-Specify that from now on, when encountering a new section, fill it with values
-from C<SECTION> unless the values are already specified.
-
-Example:
-
- [sect1]
- a=1
- b=2
-
- ;!defaults sect1
-
- [sect2]
- a=10
-
- [sect3]
- c=1
-
- [sect4]
- a=0
- b=(nil)
-
-Will result in:
-
- {
-   "sect1": {"a": 1, "b": 2},
-   "sect2": {"a": 10, "b": 2},
-   "sect3": {"a": 1, "b": 2, "c": 1},
-   "sect4": {"a": 0, "b": null}
- }
-
-Another, more meaty example:
-
- [-defaults]
- quota=1000
- ftp=1
- shell=1
- mysql=0
-
- ;!defaults -defaults
-
- ; double quota for this user
- [user1]
- quota=2000
-
- ; disable ftp for this user
- [user2]
- ftp=0
-
- ; all admin users have unlimited quota
- [-admins]
- quota=-1
-
- ;!defaults -admins
-
- [admin1]
-
- ; this admin cannot use shell
- [admin2]
- shell=0
-
- ;no more defaults
- ;!defaults
-
-Defaults to the same section results in an error.
-
-To end defaults, you can use the C<!nodefaults> directive.
-
-C<!defaults> is actually the same as C<!merge>, except that C<!merge> allows an
-optional merging mode.
-
-=head3 !nodefaults
-
-Remove C<!defaults> effect, if one has been specified previously.
-
-=head3 !merge <SECTION> [MODE]
-
-Specify that from now on, section will merge C<SECTION>. An optional C<MODE> is
-allowed to do mode-merging, as specified by L<Data::ModeMerge> (an
-implementation which does not support it can disallow mode merging). If there is
-a C<!defaults> directive in effect, defaults should be applied first. To end
-merging, you can use the C<!nomerge> directive. Example:
+Specify that from now on, section will merge the specified section(s), in order.
+The specified sections to be merged must be predeclared. Example:
 
  [defaults]
  d=4
 
- !defaults defaults
-
  [s1]
  a=1
  b=2
- d=4
 
- !merge s1 +
+ !merge defaults s1
  [s2]
  a=10
  c=30
 
- !merge s1 .
  [s3]
- a=20
- c=60
 
  !nomerge
 
- [s3]
+ [s4]
  a=20
 
-will result in:
+will result in (in pseudo-JSON):
 
  {
-   "s1": {"a": 1, "b": 2},
-   "s2": {"a": 11, "b": 20, "c": 30, "d": 8},  //(s1+defaults) [+] (s2+defaults)
-   "s3": {"a": 110, "b": 2, "c": 60, "d": 44}, //(s1+defaults) [.] (s3+defaults)
-   "s4": {"a": 20, "d": 4} // no more merging
+   "defaults": {"d":4},
+   "s1"      : {"a":1,  "b":2},
+   "s2"      : {"a":10, "b":2, "c":30, "d":4},
+   "s3"      : {"a":1,  "b":2,         "d":4},
+   "s4"      : {"a":20}, // no more merging
  }
 
 =head3 !nomerge
 
 Remove C<!merge> effect, if one has been specified previously.
 
-=head3 !sectionpath <PATH ...>
-
-Specify that from now on, prefix the section with C<PATH>. Example:
-
- [s1]
- a=1
-
- [s2]
- b=2
-
- ;!sectionpath s1
- [s2]
- c=3
-
- ;!sectionpath x y
- ;same thing: !sectionpath x/y
- [z]
- d=4
-
-will result in:
-
- {
-   "s1": {"a":1, "s2": {"c": 3}},
-   "s2": {"b":2},
-   "x": {"y": {"z": {"d":4}}}
- }
-
-=head3 !nosectionpath
-
-Remove C<!sectionpath> effect, if one has been specified previously.
-
-=head2 Section line
-
-A section line introduces a section:
-
- "[" <ARGUMENT> ( "/" <ARGUMENT> )* "]"
-
-For section line, argument is allowed to have whitespaces in it because it is
-enclosed inside C<[]>.
-
-Examples:
-
- [Section Name]
- ["quoted [] section name"]
- [""]
-
-Indentation is allowed. Comment is allowed at the end:
-
- [foo] ; a comment
-
-To write a section name with problematic characters (like "\n", "\0", "]",
-etc.), use quotes.
-
-To specify nested section, you use the path separator character C</> to separate
-between section names. An unquoted argument with C</> in it is also accepted as
-path separator. Examples:
-
- [databases/mysql]
- [databases/sqlite 3]
- ["databases"/"mysql"]
- ["databases" / "sqlite 3"]
-
-Non-contiguous sections are allowed, they will be assumed to be set/add
-parameters as if the section were written contiguously, e.g.:
-
- [sect1]
- a=1
-
- [sect2]
- a=1
-
- [sect1]
- a=2
- b=3
-
-will result in C<sect1> containing C<a> as C<[1, 2]> and C<b> as C<3>. However,
-note:
-
- [sect1]
- a=1
-
- ;!defaults sect1
- [sect2]
- d=4
-
- [sect1]
- b=2
-
- [sect3]
- c=3
-
-C<sect2> will contain C<< {"a":1, "d":4} >> since at the point of parsing
-C<sect2>, C<sect1> only contains C<< {"a":1} >>. However, C<sect3> will contain
-C<< {"a":1, "b":2, "c":3} >> since at the point of parsing C<sect3>, C<sect1>
-already becomes C<< {"a":1, "b":2} >>.
-
-=head2 Parameter line
-
-Parameter lines specify name value pairs:
-
- C<NAME-ARGUMENT> "=" <VALUE-ARGUMENT>
-
-Unquoted arguments are allowed to contain whitespaces since C<=> is used as
-separator. Indentation is allowed as well as whitespaces between C<=>. Trailing
-witespaces should be trimmed, i.e. they are not part of parameter value. Comment
-is also allowed at the end. To specify parameter name/value which contains
-problematic characters, use quoting.
-
-Examples:
-
- Parameter name = value
- name = value ; a comment
- "Parameter name"="value" ; same thing
- Parameter2="value ; this is not a comment and part of value"
- "name containing trailing spaces "="value containing trailing spaces  "
- x="\0"
-
-Specifying several parameters with the same name will create an array. Example:
-
- a=1
- a=2
-
-will result in:
-
- {"a": [1, 2]}
-
-To specify expression value, use unquoted argument enclosed with C<()>.
-Examples:
-
- a=(1+1) ; -> 2
- a="(1+1)" ; -> a string literal because of quotes, not an expression
-
-See L</"Expression"> for more details on expressions. Using expression you can
-specify an array with a zero or one element.
-
- a = ( [] )
- a = ( [1] )
-
-Normally a parameter line should occur below section line, so that parameter
-belongs to the section. But a parameter line is also allowed before section
-line, in which it will belong to section called C<DEFAULT> (configurable via the
-parser's B<default_section> attribute).
-
 =head2 Expression
 
-Currently expression is specified using L<Template::Xslate::Syntax::Kolon>
-syntax. Parameters in the current section is available as normal variables,
-example:
-
- [section]
- a=1
- b=($a + 1)
-
-Parameters from other sections are available through the C<$ROOT> variable,
-example:
-
- [s1]
- a=3
-
- [s2/s3]
- b=4
-
- [s4]
- c = ($ROOT["s1"]["a"] + $ROOT["s2"]["s3"]["b"]) ; -> 7
+Currently expression is not fully defined and left to the implementation. The
+goal is to have a simple syntax that allows variable substitution using the C<$>
+syntax and some arithmetics/string operations.
 
 =head2 Unsupported features
 
@@ -507,29 +357,30 @@ incompatible with regular INI syntax:
 
 =item * Line continuation for multiline value
 
- param=line 1 \
+ key=line 1 \
  line 2\
  line 3
 
-Supported by L<Config::IniFiles>. In IOD, use quoting:
+Supported by L<Config::IniFiles>. In IOD, use JSON string or encoding:
 
- param="line 1 \nline 2\nline 3"
+ key="line 1 \nline 2\nline 3"
 
 =item * Heredoc syntax for array
 
- param=<<EOT
+ key=<<EOT
  value1
  value2
  EOT
 
-Supported by Config::IniFiles. In IOD, use multiple assignment or expression:
+Supported by L<Config::IniFiles>. In IOD, use multiple assignment or JSON
+encoding:
 
- param=value1
- param=value2
+ key=value1
+ key=value2
 
 or:
 
- param=(["value1", "value2"])
+ key=!j ["value1", "value2"]
 
 =back
 
@@ -545,85 +396,96 @@ differently. For example, if file inclusion is turned off, this line:
 
 should make parsing fail instead of continuing (without including the file).
 
-An exception is if implementation provides explicit option to ignore certain
-features. For example, an implementation might provide an option to forbid
-expressions, or turn off expression parsing and parse it as literal.
+An exception is when an implementation provides explicit option to ignore
+certain features. For example, an implementation might provide an option to
+forbid expressions, or turn off expression parsing and parse it as literal.
 
 Below are guidelines on what parsing options an implementation can provide:
 
 =over 4
 
-=item * whether comment character C<#> is allowed
-
-Some INI parsers (like PHP 5.3 or earlier) only recognize C<;> as the comment
-character.
-
-=item * whether indented comment line is allowed
-
-Some INI parsers do not allow this.
-
-=item * whether comment at the end of parameter line is allowed
-
-Some INI parsers parse comments at the end of parameter line, some do not (they
-assume it is part of parameter value). This option can avoid ambiguities by
-forbidding such comments.
-
-=item * whether comment at the end of section line is allowed
-
-Some INI parsers parse comments at the end of parameter line, some do not. This
-option can avoid ambiguities by forbidding such comments.
-
-=item * whether indented section line is allowed
-
-Some INI parsers do not allow indented section line.
-
-=item * whether indented parameter line is allowed
-
-Most parsers that I know allow indented parameter line, but may be some do not.
+=item * whether certain encodings are recognized
 
 =item * whether expression is allowed
 
-Expression is an IOD extension. If user wants her configuration to be more
-INI-compatible, this option can be turned off.
-
 =item * whether the !include directive is allowed
-
-File inclusion is an IOD extension.
-
-=item * whether the !defaults directive is allowed
-
-Defaults is an IOD extension. If user wants her configuration to be more
-INI-compatible, this option can be turned off.
 
 =item * whether the !merge directive is allowed
 
-Merging between sections is an IOD extension.
-
-=item * whether mode merging is allowed
-
-Mode-merging is specified and implemented by L<Data::ModeMerge>, which might not
-yet available in other languages.
-
 =item * whether discontiguous section is allowed
 
-Most INI parsers allow this. Example:
+=back
 
- [s1]
- v1=1
+=head1 TODO
 
- [s2]
- x=y
+=over
 
- [s1]
- v2=2
+=item * Merge modes
+
+Either with a new directive (e.g. C<!mode_merge>) or using an option to
+C<!merge>, e.g. C<!merge -mode + SECTNAME>.
+
+=item * Directive to add prefix to section name
+
+Example:
+
+ [foo]
+ key=val
+ !section_prefix=pre.
+ [bar]
+ key=val
+ [baz]
+ key=val
+
+Then the resulting data would be (in pseudo-JSON):
+
+ {
+   "foo"    : {"key":"val"},
+   "pre.bar": {"key":"val"},
+   "pre.baz": {"key":"val"},
+ }
+
+=item * Encoding for section names
+
+So section name can contain C<]>.
+
+=item * Encoding for key names
+
+Sample syntax:
+
+ !base64 Zm9vIGJhcg== = baz ; equals to: foo bar=baz
+
+To ease parsing the C<=> sign, only C<!base64> is allowed and it must be
+separated with a space to avoid ambiguity.
 
 =back
 
 =head1 FAQ
 
+=head2 Summary of differencess between INI and IOD?
+
+IOD has more features:
+
+=over
+
+=item * various encoding for key values
+
+Using the including base64 and variable substitution/expression.
+
+=item * merge between sections
+
+=item * include other files
+
+=back
+
+=head2 Why are blank lines allowed in IOD?
+
+They aid reading by human. This is in line with the goal of making it easy for
+human to read. Note that many INI parsers also allow blank lines.
+
 =head2 What are the downsides of IOD format?
 
-=over 4
+=over
 
 =item * Currently only has Perl parser (L<Config::IOD>)
 
@@ -634,16 +496,35 @@ INI. It is also not terribly hard to write implementations in other languages.
 
 =back
 
+=head1 SEE ALSO
+
+INI format specification, L<http://en.wikipedia.org/wiki/INI_file>
+
+=head1 HOMEPAGE
+
+Please visit the project's homepage at L<https://metacpan.org/release/IOD>.
+
+=head1 SOURCE
+
+Source repository is at L<https://github.com/sharyanto/perl-IOD>.
+
+=head1 BUGS
+
+Please report any bugs or feature requests on the bugtracker website L<https://rt.cpan.org/Public/Dist/Display.html?Name=IOD>
+
+When submitting a bug or request, please include a test-file or a
+patch to an existing test-file that illustrates the bug or desired
+feature.
+
 =head1 AUTHOR
 
 Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Steven Haryanto.
+This software is copyright (c) 2014 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

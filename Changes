@@ -1,8 +1,40 @@
 Revision history for IOD
 
+0.9.1    2014-08-13 (SHARYANTO)
+
+         - Use JSON rule for double-quoted string (in key value as well as
+           directive argument), this way we don't have to define our own string
+           rule.
+
+         - Introduce key value encoding. This is the more extensible way.
+           Currently known encodings: !j (!json), !e (!expr), !base64, !h
+           (!hex).
+
+         - Remove !defaults directive, its function can be replaced by !merge.
+
+         - Remove mode merging for now.
+
+         - !merge can merge multiple sections.
+
+         - Expression is left undefined for now, no longer defined as using the
+           Xslate/Kolon syntax. Change syntax of expression to use value
+           encoding.
+
+         - Add TODO section.
+
+         - Remove mention of nested section. Implementation is now left to do it
+           (or not).
+
+         - Remove encoding/quoting in section name and key name for now.
+
+         - Remove !sectionpath and !nosectionpath for now.
+
+         - Other tweaks.
+
+
 0.9.0    2012-10-14 (SHARYANTO)
 
-         First release. Split from implementation Config-Ini-OnDrugs.
+         - First release. Split from implementation Config-Ini-OnDrugs.
 
          - Some rewording and reorganization.
 
@@ -19,4 +51,3 @@ Revision history for IOD
          - Now only one argument is allowed for !defaults.
 
          - Some rewording and reorganization.
-
