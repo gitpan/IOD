@@ -4,7 +4,7 @@
       "Steven Haryanto <stevenharyanto@gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.141170",
+   "generated_by" : "Dist::Zilla version 5.019, CPAN::Meta::Converter version 2.141520",
    "license" : [
       "perl_5"
    ],
@@ -48,7 +48,7 @@
          "web" : "https://github.com/sharyanto/perl-IOD"
       }
    },
-   "version" : "0.9.1",
+   "version" : "0.9.2",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.018002"
@@ -295,6 +295,11 @@
             "version" : "0.14"
          },
          {
+            "class" : "Dist::Zilla::Plugin::SetScriptShebang",
+            "name" : "@Author::SHARYANTO/SetScriptShebang",
+            "version" : "0.01"
+         },
+         {
             "class" : "Dist::Zilla::Plugin::SHARYANTO::OurPkgVersion",
             "name" : "@Author::SHARYANTO/SHARYANTO::OurPkgVersion",
             "version" : "0.02"
@@ -313,7 +318,7 @@
                }
             },
             "name" : "@Author::SHARYANTO/Test::Compile",
-            "version" : "2.040"
+            "version" : "2.043"
          },
          {
             "class" : "Dist::Zilla::Plugin::Test::Rinci",

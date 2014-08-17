@@ -1,5 +1,13 @@
 Revision history for IOD
 
+0.9.2    2014-08-17 (SHARYANTO)
+
+         [REMOVED FEATURES]
+
+         - Remove '!nomerge' directive. To stop merging, specify '!merge' with
+           no arguments.
+
+
 0.9.1    2014-08-13 (SHARYANTO)
 
          - Use JSON rule for double-quoted string (in key value as well as
