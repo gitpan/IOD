@@ -14,7 +14,7 @@ IOD - IOD file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.2 of IOD (from Perl distribution IOD), released on 2014-08-17.
+This document describes version 0.9.3 of IOD (from Perl distribution IOD), released on 2014-08-17.
 
 =head1 SPECIFICATION VERSION
 
@@ -244,6 +244,13 @@ This directive is invalid because of missing required argument:
 
  ;!include
 
+To catch common errors, this syntax SHOULD also be allowed:
+
+ !noop
+ ;! noop
+ ; !noop
+ ; ! noop
+
 B<Argument>. An argument is a sequence of one or more non-whitespace,
 non-newline characters, or a JSON string. Examples:
 
@@ -339,6 +346,10 @@ will result in (in pseudo-JSON):
    "s3"      : {"a":1,  "b":2,         "d":4},
    "s4"      : {"a":20}, // no more merging
  }
+
+=head3 !noop ...
+
+Directive that does nothing and will be ignored. For testing.
 
 =head2 Expression
 

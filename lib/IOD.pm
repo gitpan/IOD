@@ -1,7 +1,7 @@
 package IOD;
 
 our $DATE = '2014-08-17'; # DATE
-our $VERSION = '0.9.2'; # VERSION
+our $VERSION = '0.9.3'; # VERSION
 
 1;
 # ABSTRACT: IOD file format specification
@@ -18,7 +18,7 @@ IOD - IOD file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.2 of IOD (from Perl distribution IOD), released on 2014-08-17.
+This document describes version 0.9.3 of IOD (from Perl distribution IOD), released on 2014-08-17.
 
 =head1 HOMEPAGE
 
