@@ -1,7 +1,7 @@
 package IOD;
 
 our $DATE = '2014-08-18'; # DATE
-our $VERSION = '0.9.4'; # VERSION
+our $VERSION = '0.9.5'; # VERSION
 
 1;
 # ABSTRACT: IOD (INI On Drugs) file format specification
@@ -18,7 +18,7 @@ IOD - IOD (INI On Drugs) file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.4 of IOD (from Perl distribution IOD), released on 2014-08-18.
+This document describes version 0.9.5 of IOD (from Perl distribution IOD), released on 2014-08-18.
 
 =head1 HOMEPAGE
 

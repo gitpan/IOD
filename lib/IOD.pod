@@ -14,7 +14,7 @@ IOD - IOD (INI On Drugs) file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.4 of IOD (from Perl distribution IOD), released on 2014-08-18.
+This document describes version 0.9.5 of IOD (from Perl distribution IOD), released on 2014-08-18.
 
 =head1 SPECIFICATION VERSION
 
@@ -115,7 +115,11 @@ A blank line is a line containing zero or more whitespaces only. It is ignored.
 
 A comment line begins with C<;> or C<#> as it's first nonblank character (note
 that some INI parsers do not allow indented comment; some only recognizes C<;>
-as the comment starter character). The use of C<;> is preferred. Examples:
+as the comment starter character). The use of C<;> is preferred.
+
+ <ws>* ";"|"#" <COMMENT>
+
+Examples:
 
  ; this is a comment
  # this is also a comment
@@ -124,7 +128,7 @@ as the comment starter character). The use of C<;> is preferred. Examples:
 
 This line sets key name and value:
 
- C<NAME> <ws>* "=" <ws>* <VALUE> [";"|"#" [COMMENT]]
+ <ws>* <NAME> <ws>* "=" <ws>* <VALUE> [<ws>* ";"|"#" <COMMENT>]
 
 C<NAME> is one or more non-whitespace characters and must not contain the equal
 sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
@@ -172,7 +176,7 @@ B<fallback_section> attribute).
 
 A section line introduces a section:
 
- "[" <NAME> "]" <ws>* [";"|"#" [COMMENT]]
+ <ws>* "[" <ws>* <NAME> <ws>* "]" [<ws>* ";"|"#" <COMMENT>]
 
 C<NAME> is one or more non-newline characters that are not C<]>.
 
@@ -218,15 +222,20 @@ already becomes C<< {"a":1, "b":2} >>.
 
 =head2 Directive line
 
-A directive line is a special unindented comment line using the C<;> comment
-character, the comment starts with an exclamation mark (C<!>), a directive name
-(a word matching regular expression C</\w+/>, and zero or more arguments
-separated by whitespaces. An invalid directive will cause parsing to fail.
+A directive line is a comment line using the C<;> comment character. The comment
+starts with an exclamation mark (C<!>), a directive name (a word matching
+regular expression C</\w+/>, and zero or more arguments separated by
+whitespaces. To catch common error, the C<;> is optional and whitespaces are
+allowed.
+
+ <ws>* (";")? <ws>* "!" <ws>* <NAME> <ws>+ [ARGUMENTS]
+
+An invalid directive will cause parsing to fail.
 
 Examples of valid directives:
 
  ;!include somefile.iod
- ;!include "c:/Configuration Files/somefile.ini"
+  ! include "c:/Configuration Files/somefile.ini"
 
 This directive is invalid because of invalid name:
 
@@ -243,13 +252,6 @@ This directive is invalid because of unbalanced quotes:
 This directive is invalid because of missing required argument:
 
  ;!include
-
-To catch common errors, this syntax SHOULD also be allowed:
-
- !noop
- ;! noop
- ; !noop
- ; ! noop
 
 B<Argument>. An argument is a sequence of one or more non-whitespace,
 non-newline characters, or a JSON string. Examples:
@@ -441,7 +443,7 @@ Example:
 
  [foo]
  key=val
- !section_prefix=pre.
+ ;!section_prefix=pre.
  [bar]
  key=val
  [baz]
@@ -457,7 +459,7 @@ Then the resulting data would be (in pseudo-JSON):
 
 =item * Encoding for section names
 
-So section name can contain C<]>.
+So section name can contain, e.g., C<]> or untrimmed whitespaces.
 
 =item * Encoding for key names
 
@@ -501,8 +503,6 @@ human to read. Note that many INI parsers also allow blank lines.
 
 INI parsers exist everywhere though, so some of the time you can fallback to
 INI. It is also not terribly hard to write implementations in other languages.
-
-=item * You need to learn another minilanguage for expressions
 
 =back
 

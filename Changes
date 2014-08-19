@@ -1,5 +1,12 @@
 Revision history for IOD
 
+0.9.5    2014-08-18 (SHARYANTO)
+
+         - Fix grammars and typos.
+
+         - Officially allow bang-only directive ('!foo').
+
+
 0.9.4    2014-08-18 (SHARYANTO)
 
          - No spec changes.

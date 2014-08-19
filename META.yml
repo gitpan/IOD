@@ -20,7 +20,7 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=IOD
   homepage: https://metacpan.org/release/IOD
   repository: git://github.com/sharyanto/perl-IOD.git
-version: 0.9.4
+version: 0.9.5
 x_Dist_Zilla:
   perl:
     version: '5.018002'
