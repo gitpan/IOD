@@ -1,5 +1,5 @@
 {
-   "abstract" : "IOD file format specification",
+   "abstract" : "IOD (INI On Drugs) file format specification",
    "author" : [
       "Steven Haryanto <stevenharyanto@gmail.com>"
    ],
@@ -48,7 +48,7 @@
          "web" : "https://github.com/sharyanto/perl-IOD"
       }
    },
-   "version" : "0.9.3",
+   "version" : "0.9.4",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.018002"

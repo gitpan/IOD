@@ -1,9 +1,9 @@
 NAME
-    IOD - IOD file format specification
+    IOD - IOD (INI On Drugs) file format specification
 
 VERSION
-    This document describes version 0.9.3 of IOD (from Perl distribution
-    IOD), released on 2014-08-17.
+    This document describes version 0.9.4 of IOD (from Perl distribution
+    IOD), released on 2014-08-18.
 
 HOMEPAGE
     Please visit the project's homepage at

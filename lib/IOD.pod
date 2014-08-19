@@ -1,5 +1,5 @@
 
-#ABSTRACT: IOD file format specification
+#ABSTRACT: IOD (INI On Drugs) file format specification
 #PODNAME: IOD
 
 __END__
@@ -10,11 +10,11 @@ __END__
 
 =head1 NAME
 
-IOD - IOD file format specification
+IOD - IOD (INI On Drugs) file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.3 of IOD (from Perl distribution IOD), released on 2014-08-17.
+This document describes version 0.9.4 of IOD (from Perl distribution IOD), released on 2014-08-18.
 
 =head1 SPECIFICATION VERSION
 
@@ -269,8 +269,8 @@ arguments, C<[foo]> signifies optional arguments):
 Include another file, as if the content of the included file is the next lines
 in the current file. An included file might contain another C<!include>
 directive. If C<PATH> is not absolute, it is assumed to be relative to the
-current file (or included file). A circular include will cause the parser to die
-with an error. Example:
+current file. A circular include will cause the parser to die with an error.
+Example:
 
 File C<dir1/a.ini>:
 
@@ -286,7 +286,7 @@ File C<dir2/b.ini>:
 
 File C<dir2/b2.ini>:
 
- c = (2+1)
+ c = 3
  ;!include b3.ini
 
 File C<dir2/b3.ini>:

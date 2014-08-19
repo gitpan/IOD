@@ -1,5 +1,14 @@
 Revision history for IOD
 
+0.9.4    2014-08-18 (SHARYANTO)
+
+         - No spec changes.
+
+         - Tweak Abstract.
+
+         - Fix typo.
+
+
 0.9.3    2014-08-17 (SHARYANTO)
 
          - Add directive: !noop (does nothing, for testing).
