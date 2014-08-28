@@ -2,15 +2,15 @@ NAME
     IOD - IOD (INI On Drugs) file format specification
 
 VERSION
-    This document describes version 0.9.5 of IOD (from Perl distribution
-    IOD), released on 2014-08-18.
+    This document describes version 0.9.6 of IOD (from Perl distribution
+    IOD), released on 2014-08-28.
 
 HOMEPAGE
     Please visit the project's homepage at
     <https://metacpan.org/release/IOD>.
 
 SOURCE
-    Source repository is at <https://github.com/sharyanto/perl-IOD>.
+    Source repository is at <https://github.com/perlancar/perl-IOD>.
 
 BUGS
     Please report any bugs or feature requests on the bugtracker website
@@ -20,10 +20,10 @@ BUGS
     to an existing test-file that illustrates the bug or desired feature.
 
 AUTHOR
-    Steven Haryanto <stevenharyanto@gmail.com>
+    perlancar <perlancar@cpan.org>
 
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2014 by Steven Haryanto.
+    This software is copyright (c) 2014 by perlancar@cpan.org.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

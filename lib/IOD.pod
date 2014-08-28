@@ -14,7 +14,7 @@ IOD - IOD (INI On Drugs) file format specification
 
 =head1 VERSION
 
-This document describes version 0.9.5 of IOD (from Perl distribution IOD), released on 2014-08-18.
+This document describes version 0.9.6 of IOD (from Perl distribution IOD), released on 2014-08-28.
 
 =head1 SPECIFICATION VERSION
 
@@ -132,9 +132,10 @@ This line sets key name and value:
 
 C<NAME> is one or more non-whitespace characters and must not contain the equal
 sign (C<=>). C<VALUE> is either: 1) zero or more non-newline characters with
-optional encoding prefix, or a JSON string with double quotes. Encoding prefix
-is C<!> followed by encoding name, followed by at least one space. Known
-encodings are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
+optional encoding prefix, or a JSON string with double quotes, or a JSON array
+started with "[", or a JSON hash (object) started with "{". Encoding prefix is
+C<!> followed by encoding name, followed by at least one space. Known encodings
+are: C<j> or C<json>, C<h> or C<hex>, C<base64>, C<e> or C<expr>.
 
 Comment is allowed unless when it creates ambiguity in parsing (e.g. unquoted
 value with C<!j> or C<!json> encoding).
@@ -148,7 +149,10 @@ Examples:
  foo=!hex 00ff00 ; 3-byte binary data
  foo="a JSON string\nwith newline" ; comment
  foo=!j "a JSON string\nwith newline"
+ foo=["a json array", "because it's started", "with ["]
  foo=!json [1,2,3]
+ foo={"a json hash":1, "because it's started":2, "with {":3}
+ foo=!json {"a":1,"b":2}
 
 Specifying several keys with the same name will create an array value. Example:
 
@@ -516,7 +520,7 @@ Please visit the project's homepage at L<https://metacpan.org/release/IOD>.
 
 =head1 SOURCE
 
-Source repository is at L<https://github.com/sharyanto/perl-IOD>.
+Source repository is at L<https://github.com/perlancar/perl-IOD>.
 
 =head1 BUGS
 
@@ -528,11 +532,11 @@ feature.
 
 =head1 AUTHOR
 
-Steven Haryanto <stevenharyanto@gmail.com>
+perlancar <perlancar@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by Steven Haryanto.
+This software is copyright (c) 2014 by perlancar@cpan.org.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
