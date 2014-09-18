@@ -1,5 +1,12 @@
 Revision history for IOD
 
+0.9.7    2014-09-18 (PERLANCAR)
+
+         - No spec changes.
+
+         - Wording and fix example for !merge.
+
+
 0.9.6    2014-08-28 (PERLANCAR)
 
          - For convenience, allow value that starts with '[' and '{' to be
